@@ -1,0 +1,910 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iAnalytics Dashboard Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjMjU2M2ViIi8+PHRleHQgeD0iNTAiIHk9IjcwIiBmb250LXNpemU9IjcwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+aTwvdGV4dD48L3N2Zz4=">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        /* FONT STACK ALA IOS (SYSTEM FONT) */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            background-color: #F5F5F7; 
+            overflow: hidden; 
+            -webkit-font-smoothing: antialiased; /* Bikin font lebih tajam di Mac/iOS */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .sidebar { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border-right: 1px solid #E5E5E7; } /* Blur lebih tipis ala iOS */
+        .glass-card { background: rgba(255, 255, 255, 0.8); border: 1px solid #E5E5E7; transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        
+        .health-progress { transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1); } /* Easing ala iOS (Springy) */
+        
+        /* Font Mono tetap pakai JetBrains atau SF Mono jika ada */
+        .report-mono, .markdown-body code, #p_snippet { 
+            font-family: 'SF Mono', 'JetBrains Mono', Menlo, Monaco, Consolas, monospace; 
+            font-size: 11px; 
+        }
+
+        .markdown-body ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
+        .markdown-body strong { font-weight: 600; color: #1d1d1f; } /* Hitamnya Apple (#1d1d1f) */
+        
+        /* PDF Styles */
+        #report_template { font-family: -apple-system, BlinkMacSystemFont, sans-serif; color: #000; line-height: 1.5; }
+        .report-header { border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
+        .report-section { margin-bottom: 25px; }
+        .report-title { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e5e7; padding-bottom: 8px; margin-bottom: 12px; color: #86868b; }
+        .report-table td { padding: 10px 0; border-bottom: 1px solid #f5f5f7; }
+        
+        /* Custom Scrollbar tipis ala Mac */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+        /* --- SCREENSHOT MODE STYLES --- */
+        body.pamer-mode .sidebar { display: none !important; }
+        body.pamer-mode #btnRun, body.pamer-mode #btnExport, body.pamer-mode #dropZone, body.pamer-mode #fileStatus { display: none !important; }
+        body.pamer-mode main { margin: 0 auto; max-width: 1000px; background: #fff; }
+        body.pamer-mode #dashboard { padding-top: 20px; }
+        
+        /* Tombol Exit Pamer (Floating) */
+        #exitPamerBtn { display: none; }
+        body.pamer-mode #exitPamerBtn { display: flex; }
+    </style>
+</head>
+<body class="h-screen flex flex-col md:flex-row relative">
+
+<div id="loading_overlay" class="hidden fixed inset-0 bg-[#F5F5F7]/90 backdrop-blur-xl z-[999] flex flex-col items-center justify-center font-sans duration-[3000ms]">
+        
+        <div class="mb-8 p-4 bg-white rounded-[2rem] shadow-xl ring-1 ring-black/5 animate-bounce">
+            <svg class="w-12 h-12 text-gray-900" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.21-1.98 1.07-3.11-1.05.05-2.31.7-3.06 1.58-.69.8-1.27 2.07-1.11 3.21 1.17.08 2.35-.87 3.1-1.68z"/>
+            </svg>        
+        </div>
+
+        <div class="w-full max-w-md text-center">
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">Analyzing System Diagnostics</h3>
+            <p class="text-xs text-gray-400 font-mono tracking-widest uppercase mb-8">iAnalytics Pro v2.5</p>
+            
+            <div id="terminal_logs" class="h-16 overflow-hidden text-xs font-mono text-gray-500 space-y-1 mb-6 opacity-80">
+                </div>
+            
+            <div class="h-1 w-64 bg-gray-200 rounded-full mx-auto overflow-hidden">
+                <div id="loader_bar" class="h-full bg-blue-600 w-0 rounded-full transition-all duration-[2500ms] ease-out shadow-[0_0_10px_rgba(37,99,235,0.3)]"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="report_container" class="fixed top-0 left-0 -z-50 opacity-0 pointer-events-none w-[210mm]">
+        <div id="report_content" class="p-12 bg-white w-full text-black">
+            <div class="flex justify-between border-b-2 border-black pb-4 mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900">Laporan Forensik Digital</h1>
+                    <p class="text-sm text-slate-500 mt-1">iAnalytics Pro - Hardware Diagnostic Engine</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs uppercase font-bold text-slate-400">Tanggal Cetak</p>
+                    <p class="text-sm font-mono" id="pdf_date">-</p>
+                </div>
+            </div>
+
+            <div id="pdf_status_box" class="p-6 mb-8 rounded-lg border-l-8 bg-gray-100 border-gray-500">
+                <h2 class="text-2xl font-bold mb-1" id="pdf_model_name">Unknown Device</h2>
+                <p class="text-xs font-bold uppercase tracking-widest" id="pdf_status_text">ANALYSIS COMPLETE</p>
+            </div>
+
+            <div class="report-section">
+                <h3 class="report-title">Spesifikasi Perangkat</h3>
+                <table class="w-full text-sm border-collapse">
+                    <tr class="border-b"><td class="py-2 text-slate-500 w-1/3">Model ID</td><td class="font-bold" id="pdf_model">-</td></tr>
+                    <tr class="border-b"><td class="py-2 text-slate-500">Region / SKU</td><td id="pdf_region">-</td></tr>
+                    <tr class="border-b"><td class="py-2 text-slate-500">iOS Version</td><td id="pdf_os">-</td></tr>
+                    <tr class="border-b"><td class="py-2 text-slate-500">Storage / RAM</td><td id="pdf_storage_ram">-</td></tr>
+                    <tr class="border-b"><td class="py-2 text-slate-500">Hardware Chips</td><td id="pdf_chips">-</td></tr>
+                </table>
+            </div>
+
+            <div id="pdf_forensic_section" class="report-section hidden">
+                <h3 class="report-title text-red-600">Analisis Kerusakan (AI)</h3>
+                <div class="bg-slate-50 p-4 rounded border border-slate-200 mb-4">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Panic String (Raw Log)</p>
+                    <div class="report-mono break-all text-xs" id="pdf_panic_string">-</div>
+                </div>
+                <div class="prose prose-sm max-w-none text-sm" id="pdf_ai_advice"></div>
+            </div>
+
+            <div id="pdf_battery_section" class="report-section">
+                <h3 class="report-title">Kesehatan Daya</h3>
+                <div class="grid grid-cols-3 gap-4 text-center mt-4">
+                    <div class="p-4 border rounded bg-white">
+                        <p class="text-xs text-slate-400 uppercase">Health</p>
+                        <p class="text-2xl font-bold" id="pdf_bh">-</p>
+                    </div>
+                    <div class="p-4 border rounded bg-white">
+                        <p class="text-xs text-slate-400 uppercase">Cycles</p>
+                        <p class="text-2xl font-bold" id="pdf_cc">-</p>
+                    </div>
+                    <div class="p-4 border rounded bg-white">
+                        <p class="text-xs text-slate-400 uppercase">Temp</p>
+                        <p class="text-2xl font-bold" id="pdf_temp">-</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center border-t pt-4">
+                <p class="text-[10px] text-slate-400">Generated by iAnalytics Pro AI System.</p>
+            </div>
+        </div>
+    </div>
+
+    <aside class="w-full md:w-80 sidebar flex flex-col p-8 z-10 shadow-2xl">
+        
+        <!-- BRAND -->
+        <div class="mb-10">
+            <h1 class="text-xl font-bold tracking-tight text-blue-600">iAnalytics Pro</h1>
+            <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-bold">
+                Complex Forensic Edition
+            </p>
+        </div>
+
+        <!-- PERSONA (SIDEBAR) -->
+        <div id="persona_card"
+            class="hidden mb-6 bg-blue-50 p-4 rounded-2xl border border-blue-100 shadow-sm animate-in fade-in duration-500">
+            <div class="flex items-center gap-3 mb-2">
+                <div id="p_icon"
+                    class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow ring-1 ring-black/5">
+                    👤
+                </div>
+                <div>
+                    <p class="text-[9px] uppercase font-bold text-blue-400 tracking-widest">
+                        Dominant Usage
+                    </p>
+                    <h3 id="p_title" class="font-bold text-gray-800 text-sm leading-tight">
+                        -
+                    </h3>
+                </div>
+            </div>
+            <p id="p_desc" class="text-[10px] text-gray-500 leading-relaxed font-medium">
+                -
+            </p>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="flex-1 space-y-6 overflow-y-auto pr-2">
+
+            <!-- INPUT -->
+            <div class="space-y-4">
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    Input Data
+                </label>
+
+                <div id="dropZone"
+                    class="border-2 border-dashed border-gray-200 rounded-3xl p-6 text-center
+                        hover:border-blue-400 transition-all cursor-pointer bg-white/40 group">
+                    <input type="file" id="fileInput" class="hidden" accept=".ips,.synced">
+                    <span class="text-3xl group-hover:scale-110 inline-block transition-transform">
+                        📂
+                    </span>
+                    <p id="fileStatus"
+                    class="text-[10px] text-gray-500 mt-3 font-medium">
+                        Drop file .ips di sini
+                    </p>
+                </div>
+
+                <button id="btnRun"
+                    class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg
+                        hover:bg-blue-700 transition-all active:scale-95 text-sm">
+                    Analisis Sekarang
+                </button>
+
+                <button id="btnExport"
+                    class="hidden w-full bg-slate-800 text-white py-3 rounded-2xl font-bold
+                        shadow-lg hover:bg-black transition-all flex items-center justify-center gap-2">
+                    <span>📄</span> Cetak Laporan PDF
+                </button>
+
+                <button id="btnSnap"
+                    class="hidden w-full bg-indigo-600 text-white py-3 rounded-2xl font-bold
+                        shadow-lg hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
+                    <span>📸</span> Mode Pamer
+                </button>
+            </div>
+
+            <!-- IDENTITAS -->
+            <div id="sideProfile"
+                class="hidden animate-in fade-in duration-700 space-y-4 pt-6 border-t border-gray-200">
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    Identitas
+                </label>
+
+                <div class="space-y-3 text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Model</span>
+                        <span id="side_model" class="font-bold">-</span>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Region</span>
+                        <span id="side_region" class="font-bold text-blue-600">-</span>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Carrier</span>
+                        <span id="side_carrier" class="font-bold">-</span>
+                    </div>
+
+                    <div class="flex justify-between items-start">
+                        <span class="text-gray-500">iOS</span>
+                        <div class="text-right">
+                            <span id="side_os" class="font-bold">-</span>
+                            <span id="os_badge"
+                                class="block text-[8px] px-1.5 py-0.5 rounded mt-1 w-fit ml-auto hidden">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+
+
+    <main class="flex-1 p-6 md:p-12 overflow-y-auto bg-[#FBFBFD]">
+<div id="welcome" class="h-full flex flex-col items-center justify-center text-center">
+            <div class="w-24 h-24 bg-white rounded-[2rem] shadow-xl flex items-center justify-center text-4xl mb-6 ring-1 ring-gray-100">📡</div>
+            
+            <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Menunggu Input Data...</h2>
+            <p class="text-gray-400 mt-2 max-w-xs text-sm font-medium">Silakan upload file log (.ips) untuk memulai diagnosa forensik.</p>
+            
+            <div class="mt-8 p-5 bg-blue-50/50 rounded-3xl border border-blue-100 max-w-sm backdrop-blur-sm">
+                <div class="flex items-center justify-center gap-2 text-blue-700 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="font-bold text-[10px] uppercase tracking-widest">Jaminan Privasi Data</span>
+                </div>
+                <p class="text-[11px] text-blue-600/80 leading-relaxed px-2">
+                    File Anda diproses secara lokal di <strong>Temporary RAM</strong> (Volatile Memory). 
+                    Tidak ada data yang disimpan ke database server. 
+                    Saat halaman di-refresh, seluruh data akan <strong>dimusnahkan permanen</strong>.
+                </p>
+            </div>
+        </div>
+
+        <div id="dashboard" class="hidden flex flex-col space-y-8 max-w-4xl mx-auto">
+            <header class="flex justify-between items-end order-1">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 pt-3">Dashboard Monitoring</p>
+                    <h2 class="text-4xl font-bold mt-1" id="main_model_title">iPhone</h2>
+                </div>
+                <div id="main_status_badge" class="px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wider"></div>
+            </header>
+
+            <div id="metrics_grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 order-2">
+                <div class="glass-card p-6 rounded-[2rem] shadow-sm border-l-4 border-l-green-500 relative overflow-hidden">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Battery Health</p>
+                        <div class="flex justify-between items-end">
+                            <p class="text-4xl font-bold text-gray-800" id="m_health">-%</p>
+                            <div class="text-right text-[10px] font-mono text-gray-500 mb-1">
+                                <p>Real: <span id="m_actual" class="font-bold text-blue-600">-</span></p>
+                                <p>Design: <span id="m_design" class="font-bold">-</span></p>
+                            </div>
+                        </div>                       
+                        <div class="mt-3 w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                            <div id="health_bar" class="health-progress h-full bg-green-500" style="width: 0%"></div>
+                        </div>
+                </div>
+                
+                <div class="glass-card p-6 rounded-[2rem] shadow-sm border-l-4 border-l-blue-500">
+                    <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">Cycle Count</p>
+                    <p class="text-4xl font-bold text-gray-800" id="m_cycles">-</p>
+                    <p class="text-[10px] text-blue-600 font-medium mt-1 bg-blue-50 inline-block px-2 py-1 rounded-lg" id="m_age_est">
+                            Estimasi: -
+                    </p>
+                </div>
+                <div class="glass-card p-6 rounded-[2rem] shadow-sm border-l-4 border-l-orange-500">
+                    <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">Suhu Puncak</p>
+                    <p class="text-4xl font-bold text-gray-800" id="m_temp">-°C</p>
+                </div>
+            </div>
+
+            <div id="panic_view" class="hidden space-y-6">
+                <div class="bg-red-600 rounded-[2.5rem] p-8 text-white shadow-2xl flex flex-col md:flex-row gap-6 items-center">
+                    <div class="flex-1">
+                        <p class="text-red-200 text-xs font-bold uppercase tracking-widest mb-1">Critical Error</p>
+                        <h2 class="text-3xl font-bold mb-4">Forensic Analysis Mode</h2>
+                        <div id="culprit_box" class="hidden mb-4 bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 inline-flex items-center gap-2">
+                            <span class="text-xs font-medium text-red-100">Suspect:</span>
+                            <span class="font-mono font-bold text-sm text-white" id="p_culprit">-</span>
+                        </div>
+                        <div class="bg-black/20 p-4 rounded-2xl border border-white/10 font-mono text-[10px] break-all opacity-90" id="p_snippet"></div>
+                    </div>
+                    <div class="text-6xl animate-pulse">⚠️</div>
+                </div>
+                <div class="glass-card p-8 rounded-[2rem] border-l-8 border-l-red-500 shadow-sm">
+                    <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-4"><span>🧠</span> Analisis AI (Gemini)</h3>
+                    <div id="p_advice_list" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <div id="behavior_notice" class="hidden my-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                <div id="notice_box" class="w-full bg-white/80 backdrop-blur-md rounded-[2rem] p-6 flex items-center gap-6 shadow-sm border border-gray-200/50 hover:shadow-md transition-all duration-300">
+                    
+                    <div id="notice_icon_bg" class="w-14 h-14 rounded-[1.2rem] flex items-center justify-center text-3xl shrink-0 transition-colors duration-300 bg-gray-50">
+                        <span id="notice_icon">🧐</span>
+                    </div>
+
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 text-lg" id="notice_title">Analyzing...</h3>
+                        <p class="text-sm text-gray-500 mt-1 leading-relaxed font-medium" id="notice_desc">Membaca pola pemakaian...</p>
+                    </div>
+
+                    <div class="hidden sm:block">
+                        <div id="notice_badge" class="px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-widest border border-gray-200">
+                            AI Insight
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tech_row" class="grid grid-cols-1 md:grid-cols-2 gap-6 order-3 mb-3">
+                <div class="glass-card p-8 rounded-[2rem] shadow-sm space-y-4">
+                    <h3 class="font-bold text-gray-800">🛠️ Hardware Diagnostics</h3>
+                    <div id="m_diag_list" class="space-y-3"></div>
+                </div>
+                <div class="glass-card p-8 rounded-[2rem] shadow-sm space-y-4">
+                    <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                        ⚙️ Technical Specs
+                        <span class="px-2 py-0.5 bg-gray-100 text-[9px] text-gray-500 rounded uppercase tracking-wider">Detected</span>
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm py-2 border-b border-gray-100">
+                            <span class="text-gray-400">Processor / SoC</span>
+                            <span class="font-bold text-purple-600 tracking-wide text-right" id="m_processor">-</span>
+                        </div>
+
+                        <div class="flex justify-between text-sm py-2 border-b border-gray-100">
+                            <span class="text-gray-400">Display Tech</span>
+                            <span class="font-bold text-gray-700 text-right" id="m_screen">-</span>
+                        </div>
+
+                        <div class="flex justify-between text-sm py-2 border-b border-gray-100">
+                            <span class="text-gray-400">Connectivity</span>
+                            <div class="text-right">
+                                <p class="font-bold text-blue-600 text-xs" id="m_wifi">-</p>
+                                <p class="text-[10px] text-gray-400 font-mono mt-0.5" id="m_baseband">-</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between text-sm py-2 border-b border-gray-100">
+                            <span class="text-gray-400">Memory</span>
+                            <span class="font-semibold text-gray-700 text-right">
+                                <span id="m_ram">-</span> RAM / <span id="m_storage">-</span> ROM
+                            </span>
+                        </div>
+
+                        <div id="row_nand" class="hidden flex justify-between text-sm py-2 border-b border-gray-100">
+                            <span class="text-gray-400">NAND Written (TBW)</span>
+                            <div class="text-right">
+                                <p class="font-bold text-gray-800 text-xs" id="m_tbw">-</p>
+                                <p class="text-[10px] text-gray-400 mt-0.5" id="m_nand_health">-</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between text-sm py-2">
+                            <span class="text-gray-400">Region SKU</span>
+                            <span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded text-gray-600" id="m_sku">-</span>
+                        </div>
+
+                        <div class="flex justify-between text-sm py-2 border-t border-gray-100 pt-3">
+                            <span class="text-gray-400">Last Uptime</span>
+                            <span class="font-bold text-xs text-red-500 tracking-wide" id="m_uptime">-</span>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        </div>
+    </main>
+
+    <div id="exitPamerBtn" class="fixed bottom-8 right-8 z-[100] animate-bounce cursor-pointer bg-red-600 text-white px-6 py-3 rounded-full shadow-2xl font-bold hover:bg-red-700 transition-all items-center gap-2">
+        <span>❌</span> Keluar Mode Pamer
+    </div>
+<script>
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const btnRun = document.getElementById('btnRun');
+        const btnExport = document.getElementById('btnExport');
+        const loadingOverlay = document.getElementById('loading_overlay');
+        
+        let globalData = null; 
+
+        // --- 1. HANDLE CLICK UPLOAD (Cara Lama) ---
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = () => { 
+            if(fileInput.files[0]) updateFileStatus(fileInput.files[0].name); 
+        };
+
+        // --- 2. HANDLE DRAG & DROP (FITUR BARU) ---
+        // Mencegah browser membuka file secara default saat di-drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Efek Visual: Ganti warna border/bg saat file diseret di atas kotak
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('border-blue-500', 'bg-blue-50', 'scale-[1.02]'); // Efek Highlight
+            dropZone.classList.remove('border-gray-200', 'bg-white/40');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('border-blue-500', 'bg-blue-50', 'scale-[1.02]');
+            dropZone.classList.add('border-gray-200', 'bg-white/40');
+        }
+
+        // Logic saat file dilepas (Drop)
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                fileInput.files = files; // Masukkan file ke input hidden
+                updateFileStatus(files[0].name); // Update teks
+            }
+        }
+
+        function updateFileStatus(fileName) {
+            document.getElementById('fileStatus').innerHTML = `
+                <span class="text-blue-600 font-bold">File Siap:</span> ${fileName}
+            `;
+            // Efek visual sukses
+            dropZone.classList.add('border-green-400');
+        }
+
+        // --- FUNGSI PENGAMAN: "setText" (Anti Crash) ---
+        function setText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = (text !== undefined && text !== null) ? text : "N/A";
+        }
+
+        function setHTML(id, html) {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = html;
+        }
+
+        
+        // --- LOGIC MODE PAMER ---
+        const btnSnap = document.getElementById('btnSnap');
+        const exitPamerBtn = document.getElementById('exitPamerBtn');
+
+        // Masuk Mode Pamer
+        btnSnap.onclick = () => {
+            document.body.classList.add('pamer-mode');
+            // Kasih notif kecil
+            alert("Mode Pamer Aktif! \nSidebar disembunyikan biar enak di-screenshot.\nTekan tombol Merah di pojok kanan bawah buat balik.");
+        };
+
+        // Keluar Mode Pamer
+        exitPamerBtn.onclick = () => {
+            document.body.classList.remove('pamer-mode');
+        };
+        // --- FUNGSI EXPORT PDF ---
+        btnExport.onclick = () => {
+            if(!globalData) return;
+            const now = new Date();
+            setText('pdf_date', now.toLocaleDateString() + " " + now.toLocaleTimeString());
+            setText('pdf_model_name', globalData.model_name);
+            setText('pdf_model', globalData.model_name);
+            setText('pdf_region', globalData.region_name + " / " + globalData.sku);
+            setText('pdf_os', globalData.os_version);
+            setText('pdf_storage_ram', `${globalData.capacity}GB / ${globalData.ram}GB RAM`);
+            setText('pdf_chips', `${globalData.wifi_chip} / Baseband: ${globalData.baseband}`);
+
+            // Logic Warna Status Box
+            const pdfStatusBox = document.getElementById('pdf_status_box');
+            const pdfStatusText = document.getElementById('pdf_status_text');
+            if(pdfStatusBox && pdfStatusText) {
+                if (globalData.ui_mode !== 'NORMAL_ANALYTIC') {
+                    pdfStatusBox.className = "p-6 mb-8 rounded-lg border-l-8 bg-red-50 border-red-600 text-red-900";
+                    pdfStatusText.innerText = "CRITICAL FAILURE DETECTED";
+                } else {
+                    pdfStatusBox.className = "p-6 mb-8 rounded-lg border-l-8 bg-green-50 border-green-600 text-green-900";
+                    pdfStatusText.innerText = "SYSTEM HEALTHY";
+                }
+            }
+
+            const pdfForensic = document.getElementById('pdf_forensic_section');
+            if(pdfForensic) {
+                if (globalData.ui_mode !== 'NORMAL_ANALYTIC') {
+                    pdfForensic.classList.remove('hidden');
+                    setText('pdf_panic_string', globalData.panic_snippet);
+                    let adviceHTML = "";
+                    globalData.expert_advice.forEach(adv => { adviceHTML += marked.parse(adv); });
+                    setHTML('pdf_ai_advice', adviceHTML);
+                } else {
+                    pdfForensic.classList.add('hidden');
+                }
+            }
+
+            const pdfBattery = document.getElementById('pdf_battery_section');
+            if(pdfBattery) {
+                if (globalData.ui_mode === 'PANIC_FULL_ONLY') {
+                    pdfBattery.classList.add('hidden');
+                } else {
+                    pdfBattery.classList.remove('hidden');
+                    setText('pdf_bh', globalData.battery_health != "N/A" ? globalData.battery_health + "%" : "-");
+                    setText('pdf_cc', globalData.cycle_count);
+                    setText('pdf_temp', globalData.peak_temp != "N/A" ? globalData.peak_temp + "°C" : "-");
+                }
+            }
+
+            const element = document.getElementById('report_content');
+            html2pdf().set({
+                margin: 10,
+                filename: `Report_${globalData.model_name}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(element).save();
+        };
+
+        
+
+    // --- FITUR: SYSTEM LOADER (Versi Ganteng) ---
+    const logs = [
+        "Verifying IPS signature...",
+        "Mounting virtual filesystem...",
+        "Reading thermal sensors...",
+        "Decrypting battery metrics...",
+        "Identifying SoC architecture...",
+        "Analyzing crash patterns...",
+        "Generating forensic report...",
+        "Done."
+    ];
+
+    function runHackerLoader() { // Nama fungsi tetep biar ga usah ubah onclick
+        const terminal = document.getElementById('terminal_logs');
+        const bar = document.getElementById('loader_bar');
+        terminal.innerHTML = "";
+        bar.style.width = "0%";
+        
+        // Animasi Bar
+        setTimeout(() => { bar.style.width = "100%"; }, 100);
+
+        // Animasi Teks (Warna Abu-abu, bukan Hijau)
+        logs.forEach((log, index) => {
+            setTimeout(() => {
+                // Hapus log lama biar ga numpuk (biar kayak ganti status)
+                terminal.innerHTML = `<p class="animate-in fade-in slide-in-from-bottom-2 duration-300">${log}</p>`;
+            }, index * 350); 
+        });
+    }
+        btnRun.onclick = async () => {
+            if(!fileInput.files[0]) return alert("Pilih file dulu!");
+            loadingOverlay.classList.remove('hidden');
+            runHackerLoader();
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/', { method: 'POST', body: formData });
+                const data = await response.json();
+                if(data.error) throw new Error(data.error);
+                globalData = data; 
+
+                const panicView = document.getElementById('panic_view');
+                const metricsGrid = document.getElementById('metrics_grid');
+                const techRow = document.getElementById('tech_row');
+                const dashboard = document.getElementById('dashboard');
+
+                // Reset
+                panicView.classList.add('hidden');
+                metricsGrid.classList.remove('hidden');
+                metricsGrid.style.order = "2"; panicView.style.order = "3"; techRow.style.order = "4";
+
+                if (data.ui_mode === 'PANIC_FULL_ONLY') {
+                    metricsGrid.classList.add('hidden');
+                    panicView.classList.remove('hidden');
+                    panicView.style.order = "1.5";
+                } else if (data.ui_mode === 'ANALYTIC_WITH_ERROR') {
+                    metricsGrid.classList.remove('hidden');
+                    panicView.classList.remove('hidden');
+                    panicView.style.order = "5";
+                }
+
+                // --- PENGISIAN DATA AMAN (Pakai setText) ---
+                if (data.ui_mode !== 'NORMAL_ANALYTIC') {
+                    setText('p_snippet', data.panic_snippet);
+                    const adviceList = document.getElementById('p_advice_list');
+                    if(adviceList) {
+                        adviceList.innerHTML = '';
+                        data.expert_advice.forEach(adv => {
+                            const div = document.createElement('div');
+                            div.className = "markdown-body p-6 bg-white/90 rounded-2xl text-xs text-gray-700 shadow-sm border border-blue-100 leading-relaxed";
+                            div.innerHTML = marked.parse(adv);
+                            adviceList.appendChild(div);
+                        });
+                    }
+                }
+
+                document.getElementById('sideProfile').classList.remove('hidden');
+                setText('side_model', data.model_name);
+                setText('side_region', data.region_name);
+                setText('side_carrier', data.carrier);
+                setText('side_os', data.os_version);
+                
+                document.getElementById('welcome').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                setText('main_model_title', data.model_name);
+                
+                btnExport.classList.remove('hidden');
+                document.getElementById('btnSnap').classList.remove('hidden');
+
+                const healthVal = data.battery_health != "N/A" ? parseInt(data.battery_health) : 0;
+                setText('m_health', healthVal > 0 ? healthVal + "%" : "N/A");
+                
+                const bar = document.getElementById('health_bar');
+                if(bar) {
+                    bar.style.width = healthVal + '%';
+                    if(healthVal > 0 && healthVal < 80) {
+                        bar.classList.replace('bg-green-500', 'bg-orange-500');
+                        document.getElementById('m_health').classList.add('text-orange-600');
+                    } else {
+                        bar.classList.replace('bg-orange-500', 'bg-green-500');
+                        document.getElementById('m_health').classList.remove('text-orange-600');
+                    }
+                }
+
+                setText('m_processor', data.processor);
+                setText('m_screen', data.screen_desc); // Layar 120Hz/60Hz
+                setText('m_actual', data.actual_capacity);
+                setText('m_design', data.design_capacity);
+                setText('m_cycles', data.cycle_count);
+                setText('m_temp', data.peak_temp != "N/A" ? data.peak_temp + "°C" : "N/A");
+                setText('m_ram', data.ram);
+                setText('m_storage', data.capacity);
+                setText('m_wifi', data.wifi_desc);
+                setText('m_baseband', data.modem_desc);
+                setText('m_ram', data.ram + "GB");
+                setText('m_storage', data.capacity + "GB");
+                setText('m_sku', data.sku);
+                // ISI ESTIMASI UMUR
+                setText('m_age_est', "Estimasi Pakai: " + data.age_estimation);
+                // ISI UPTIME (VISUAL FIX)
+                const uptimeEl = document.getElementById('m_uptime');
+                if(uptimeEl) {
+                    // Cek apakah data valid (bukan N/A)
+                    if (data.uptime_desc !== "N/A") {
+                        uptimeEl.innerText = data.uptime_desc;
+                        
+                        // Logic warna (Merah = Bootloop, Hijau = Aman)
+                        if(data.uptime_desc.includes("Detik") || data.uptime_desc.includes("Menit")) {
+                            uptimeEl.className = "font-bold text-xs text-red-600 bg-red-50 px-2 py-1 rounded animate-pulse";
+                        } else {
+                            uptimeEl.className = "font-bold text-xs text-green-600 bg-green-50 px-2 py-1 rounded";
+                        }
+                    } else {
+                        // Kalau N/A (Log Analytics), tampilkan netral
+                        uptimeEl.innerText = "N/A (Analytics Log)";
+                        uptimeEl.className = "font-mono text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded";
+                    }
+                }
+
+                // --- UPDATE 1: OS BADGE ---
+                setText('side_os', data.os_version);
+                const osBadge = document.getElementById('os_badge');
+                if (data.os_quality) {
+                    osBadge.classList.remove('hidden');
+                    osBadge.className = "block text-[9px] px-1.5 py-0.5 rounded mt-0.5 w-fit ml-auto " + data.os_badge_color;
+                    osBadge.innerText = data.os_quality;
+                }
+
+                // --- UPDATE 2: CRASH CULPRIT (PANIC ONLY) ---
+                if (data.ui_mode !== 'NORMAL_ANALYTIC') {
+                    const culpritBox = document.getElementById('culprit_box');
+                    const culpritText = document.getElementById('p_culprit');
+                    
+                    if (data.crash_culprit && data.crash_culprit !== "-") {
+                        culpritBox.classList.remove('hidden');
+                        culpritText.innerText = data.crash_culprit;
+                    } else {
+                        culpritBox.classList.add('hidden');
+                    }
+                }
+
+                // [BARU] NAND WRITES
+                const nandRow = document.getElementById('row_nand');
+                
+                // Cek apakah datanya VALID (Bukan "0" dan Bukan "N/A")
+                if (data.storage_tbw && data.storage_tbw !== "0" && data.storage_tbw !== "N/A") {
+                    // Kalo ada data -> MUNCULKAN
+                    nandRow.classList.remove('hidden');
+                    nandRow.className = "flex justify-between text-sm py-2 border-b border-gray-100 animate-in fade-in slide-in-from-left-2 duration-500"; // Pake animasi biar smooth
+                    
+                    setText('m_tbw', data.storage_tbw);
+                    setText('m_nand_health', data.storage_wear);
+                    
+                    // Logic Warna
+                    const tbwDesc = document.getElementById('m_nand_health');
+                    if (data.storage_wear.includes("Critical") || data.storage_wear.includes("Heavy")) {
+                        tbwDesc.className = "text-[10px] text-red-500 font-bold mt-0.5";
+                    } else {
+                        tbwDesc.className = "text-[10px] text-green-600 font-medium mt-0.5";
+                    }
+                } else {
+                    // Kalo gak ada data -> UMPETIN LAGI (Jaga-jaga kalau user ganti file)
+                    nandRow.classList.add('hidden');
+                }
+
+                const list = document.getElementById('m_diag_list');
+                if(list) {
+                    list.innerHTML = '';
+                    data.diagnostics.forEach(d => {
+                        const div = document.createElement('div');
+                        const isBad = d.includes('🚨') || d.includes('❌') || d.includes('🔥');
+                        div.className = `p-4 rounded-2xl text-[11px] font-bold border ${isBad ? 'bg-orange-50 text-orange-700 border-orange-100' : 'bg-green-50 text-green-700 border-green-100'}`;
+                        div.innerText = d;
+                        list.appendChild(div);
+                    });
+                }
+
+                // [UPDATE JS: POPULATE PERSONA]
+                const personaCard = document.getElementById('persona_card');
+                
+                if (data.user_persona && data.user_persona !== "Unknown User") {
+                    personaCard.classList.remove('hidden');
+                    setText('p_icon', data.persona_icon);
+                    setText('p_title', data.user_persona);
+                    setText('p_desc', data.persona_desc);
+                } else {
+                    personaCard.classList.add('hidden');
+                }
+
+                const badge = document.getElementById('main_status_badge');
+                if(badge) {
+                    if(data.ui_mode !== 'NORMAL_ANALYTIC' || data.diagnostics.some(d => d.includes('❌'))) {
+                        badge.innerText = "Action Required";
+                        badge.className = "px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-600 animate-pulse";
+                    } else {
+                        badge.innerText = "System Healthy";
+                        badge.className = "px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-600";
+                    }
+                }
+
+                
+                // --- [UPDATE: LOGIC SMART NOTICE (FULL WIDTH)] ---
+                const behaviorNotice = document.getElementById('behavior_notice');
+                const noticeBox = document.getElementById('notice_box');
+                const noticeIcon = document.getElementById('notice_icon');
+                const noticeIconBg = document.getElementById('notice_icon_bg'); 
+                const noticeBadge = document.getElementById('notice_badge'); // Ganti Dot jadi Badge text
+                
+                if (data.user_behavior && data.user_behavior !== "N/A") {
+                    behaviorNotice.classList.remove('hidden');
+                    
+                    setText('notice_title', data.user_behavior);
+                    setText('notice_desc', data.behavior_desc);
+                    
+                    // RESET CLASS (PENTING: Pakai w-full, bukan mx-auto)
+                    noticeIconBg.className = "w-14 h-14 rounded-[1.2rem] flex items-center justify-center text-3xl shrink-0 transition-colors duration-300";
+                    noticeBox.className = "w-full bg-white/80 backdrop-blur-md rounded-[2rem] p-6 flex items-center gap-6 shadow-sm border hover:shadow-md transition-all duration-300";
+
+                    // LOGIC WARNA (UPDATE LENGKAP)
+                    if (data.behavior_color.includes('red')) {
+                        // KASUS BARBAR (Merah)
+                        noticeIconBg.className = "w-14 h-14 rounded-[1.2rem] flex items-center justify-center text-3xl shrink-0 transition-colors duration-300 bg-red-50 text-red-500";
+                        noticeBox.className = "w-full bg-white/80 backdrop-blur-md rounded-[2rem] p-6 flex items-center gap-6 shadow-sm border hover:shadow-md transition-all duration-300 border-red-100 shadow-red-50/50";
+                        noticeBadge.className = "px-4 py-1.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold uppercase tracking-widest border border-red-200";
+                        noticeBadge.innerText = "ACTION NEEDED";
+                        noticeIcon.innerText = "🔥";
+
+                    } else if (data.behavior_color.includes('green')) {
+                        // KASUS SULTAN (Hijau)
+                        noticeIconBg.className = "w-14 h-14 rounded-[1.2rem] flex items-center justify-center text-3xl shrink-0 transition-colors duration-300 bg-emerald-50 text-emerald-500";
+                        noticeBox.className = "w-full bg-white/80 backdrop-blur-md rounded-[2rem] p-6 flex items-center gap-6 shadow-sm border hover:shadow-md transition-all duration-300 border-emerald-100 shadow-emerald-50/50";
+                        noticeBadge.className = "px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-600 text-[10px] font-bold uppercase tracking-widest border border-emerald-200";
+                        noticeBadge.innerText = "EXCELLENT";
+                        noticeIcon.innerText = "💎";
+
+                    // ... (setelah if red) ...
+
+                    } else if (data.behavior_color.includes('orange')) {
+                        // KASUS HEAVY USER (Orange)
+                        noticeIconBg.className = "w-14 h-14 rounded-[1.2rem] flex items-center justify-center text-3xl shrink-0 transition-colors duration-300 bg-orange-50 text-orange-500";
+                        noticeBox.className = "w-full bg-white/80 backdrop-blur-md rounded-[2rem] p-6 flex items-center gap-6 shadow-sm border hover:shadow-md transition-all duration-300 border-orange-100 shadow-orange-50/50";
+                        noticeBadge.className = "px-4 py-1.5 rounded-full bg-orange-100 text-orange-600 text-[10px] font-bold uppercase tracking-widest border border-orange-200";
+                        noticeBadge.innerText = "HEAVY USAGE";
+                        noticeIcon.innerText = "⚡";
+
+                    // ... (lanjut ke else if green) ...
+                    } else if (data.behavior_color.includes('cyan')) {
+                        // KASUS CONTENT CREATOR (Cyan)
+                        noticeIconBg.className = "w-14 h-14 rounded-[1.2rem] flex items-center justify-center text-3xl shrink-0 transition-colors duration-300 bg-cyan-50 text-cyan-600";
+                        noticeBox.className = "w-full bg-white/80 backdrop-blur-md rounded-[2rem] p-6 flex items-center gap-6 shadow-sm border hover:shadow-md transition-all duration-300 border-cyan-100 shadow-cyan-50/50";
+                        noticeBadge.className = "px-4 py-1.5 rounded-full bg-cyan-100 text-cyan-700 text-[10px] font-bold uppercase tracking-widest border border-cyan-200";
+                        noticeBadge.innerText = "PRODUCTIVE";
+                        noticeIcon.innerText = "🎥";
+
+                    } else if (data.behavior_color.includes('blue')) {
+                        // KASUS NORMAL (Biru)
+                        noticeIconBg.className = "w-14 h-14 rounded-[1.2rem] flex items-center justify-center text-3xl shrink-0 transition-colors duration-300 bg-blue-50 text-blue-500";
+                        noticeBox.className = "w-full bg-white/80 backdrop-blur-md rounded-[2rem] p-6 flex items-center gap-6 shadow-sm border hover:shadow-md transition-all duration-300 border-blue-100 shadow-blue-50/50";
+                        noticeBadge.className = "px-4 py-1.5 rounded-full bg-blue-100 text-blue-600 text-[10px] font-bold uppercase tracking-widest border border-blue-200";
+                        noticeBadge.innerText = "NORMAL";
+                        noticeIcon.innerText = "✅";
+
+                    } else if (data.behavior_color.includes('purple')) {
+                        // KASUS SUPER USER (Ungu) <-- INI YANG KEMARIN HILANG
+                        noticeIconBg.className = "w-14 h-14 rounded-[1.2rem] flex items-center justify-center text-3xl shrink-0 transition-colors duration-300 bg-purple-50 text-purple-600";
+                        noticeBox.className = "w-full bg-white/80 backdrop-blur-md rounded-[2rem] p-6 flex items-center gap-6 shadow-sm border hover:shadow-md transition-all duration-300 border-purple-100 shadow-purple-50/50";
+                        noticeBadge.className = "px-4 py-1.5 rounded-full bg-purple-100 text-purple-600 text-[10px] font-bold uppercase tracking-widest border border-purple-200";
+                        noticeBadge.innerText = "LEGENDARY";
+                        noticeIcon.innerText = "🦄";
+
+                    } else {
+                        // DEFAULT (Abu-abu)
+                        noticeIconBg.className = "w-14 h-14 rounded-[1.2rem] flex items-center justify-center text-3xl shrink-0 transition-colors duration-300 bg-gray-50 text-gray-500";
+                        noticeBox.className = "w-full bg-white/80 backdrop-blur-md rounded-[2rem] p-6 flex items-center gap-6 shadow-sm border hover:shadow-md transition-all duration-300 border-gray-200";
+                        noticeBadge.className = "px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-widest border border-gray-200";
+                        noticeBadge.innerText = "INFO";
+                        noticeIcon.innerText = "🧐";
+                    }
+                } else {
+                    behaviorNotice.classList.add('hidden');
+                }
+            } catch (err) { alert("Gagal menganalisis: " + err.message); } 
+            finally { // Delay dikit biar loading barnya nyampe 100% dulu
+            setTimeout(() => {
+                loadingOverlay.classList.add('hidden'); 
+                
+                // --- ANIMASI MUNCUL SATU-SATU (STAGGERED) ---
+                // Kita kasih class animasi ke elemen-elemen dashboard
+                const elementsToAnimate = [
+                    document.querySelector('header'), // Judul
+                    document.getElementById('metrics_grid'), // Kartu Baterai
+                    document.getElementById('behavior_notice'), // Notice
+                    document.getElementById('tech_row') // Tabel Teknis
+                ];
+
+                elementsToAnimate.forEach((el, index) => {
+                    if(el) {
+                        // Reset opacity dulu biar gak keliatan
+                        el.style.opacity = "0";
+                        el.style.transform = "translateY(20px)";
+                        el.style.transition = "all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)";
+                        
+                        // Munculin berurutan
+                        setTimeout(() => {
+                            el.style.opacity = "1";
+                            el.style.transform = "translateY(0)";
+                        }, index * 150); // Tiap elemen beda 150ms
+                    }
+                });
+
+            }, 3000); // Kasih napas 0.5 detik sebelum nutup loader
+        }
+        };
+    </script>
+</body>
+</html>

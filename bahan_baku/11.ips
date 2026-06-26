@@ -1,0 +1,27 @@
+{
+  "timestamp": "2025-12-30 18:30:00.00 +0700",
+  "bug_type": "211",
+  "os_version": "iPhone OS 17.1.2 (21B101)",
+  "name": "Analytics-Daily",
+  "model_identity": "iPhone12,1",
+  "payload": {
+    "productSku": "PA/A",
+    "deviceCapacity": 128,
+    "dramSize": 4.0,
+    "homeCarrierName": "Indosat Ooredoo",
+    "WiFiChipset": "4378_US",
+    "basebandFirmwareVersion": "4.05.02",
+    "battery_details": {
+      "last_value_MaximumCapacityPercent": 86,
+      "last_value_CycleCount": 640,
+      "last_value_NominalChargeCapacity": 2650,
+      "design_capacity": 3110
+    },
+    "thermal_metrics": {
+      "last_value_MaximumTemperature": 382
+    },
+    "metadata": {
+      "region_info": "Indonesia (Official)"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-12-28 15:45:00.00 +0700",
+  "bug_type": "210",
+  "os_version": "iPhone OS 16.1.1 (20B101)",
+  "incident_id": "WATER-DMG-SE2-TEST-001",
+  "model_identity": "iPhone12,8",
+  "payload": {
+    "productSku": "PA/A",
+    "deviceCapacity": 64,
+    "dramSize": 3.0,
+    "homeCarrierName": "Telkomsel",
+    "WiFiChipset": "4378_US",
+    "basebandFirmwareVersion": "3.04.01",
+    "battery_details": {
+      "last_value_MaximumCapacityPercent": 72,
+      "last_value_CycleCount": 1150,
+      "last_value_NominalChargeCapacity": 1200
+    },
+    "thermal_metrics": {
+      "last_value_MaximumTemperature": 525
+    },
+    "crash_logs": {
+      "panicString": "panic(cpu 1 caller 0xfffffff02ecc): AOP PANIC - I2C bus error. Short circuit detected on VDD_MAIN. Missing sensor(s): TG0B Mic1 Mesa PRS0"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "timestamp": "2025-12-31 23:59:59.00 +0700",
+  "bug_type": "211",
+  "os_version": "iPhone OS 15.7.9 (19H365)",
+  "name": "Analytics-Daily",
+  "model_identity": "iPhone9,1",
+  "payload": {
+    "productSku": "J/A",
+    "deviceCapacity": 32,
+    "dramSize": 2.0,
+    "homeCarrierName": "SoftBank",
+    "WiFiChipset": "BCM4350",
+    "basebandFirmwareVersion": "9.01.00",
+    "battery_details": {
+      "last_value_MaximumCapacityPercent": 98,
+      "last_value_CycleCount": 1340,
+      "last_value_NominalChargeCapacity": 1920,
+      "design_capacity": 1960
+    },
+    "thermal_metrics": {
+      "last_value_MaximumTemperature": 415
+    },
+    "metadata": {
+      "region_info": "Japan"
+    }
+  }
+}

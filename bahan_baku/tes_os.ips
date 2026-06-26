@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-12-30 09:15:22.00 +0700",
+  "bug_type": "210",
+  "os_version": "iPhone OS 18.1 (22B82)",
+  "name": "Panic-Full-2025-12-30",
+  "model_identity": "iPhone17,2",
+  "payload": {
+    "productSku": "ID/A",
+    "deviceCapacity": 1024,
+    "dramSize": 8.0,
+    "homeCarrierName": "Telkomsel 5G",
+    "hardware_model": "D94AP",
+    "battery_details": {
+      "last_value_MaximumCapacityPercent": 100,
+      "last_value_CycleCount": 12,
+      "last_value_NominalChargeCapacity": 4650
+    },
+    "thermal_metrics": {
+      "last_value_MaximumTemperature": 380
+    },
+    "crash_logs": {
+      "panicString": "panic(cpu 3 caller 0xfffffff04a1b): userspace watchdog timeout: no successful checkins from com.apple.SpringBoard in 180 seconds. service: backboardd. possible deadlock in CoreAnimation or render server. \nDebugger message: panic\nOS version: 18.1 (22B82)"
+    },
+    "metadata": {
+      "bug_category": "Software Watchdog",
+      "process_blamed": "SpringBoard"
+    }
+  }
+}

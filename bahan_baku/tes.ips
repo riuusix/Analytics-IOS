@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-02-24 14:25:24.00 +0700",
+  "bug_type": "210",
+  "os_version": "iPhone OS 17.4 (21E219)",
+  "incident_id": "PANIC-HYBRID-TEST-2025",
+  "name": "Panic-Full-Log",
+  "model_identity": "iPhone14,3",
+  "payload": {
+    "productSku": "PA/A",
+    "deviceCapacity": 256,
+    "dramSize": 6.0,
+    "homeCarrierName": "Telkomsel",
+    "hardware_model": "D64AP",
+    "battery_details": {
+      "last_value_MaximumCapacityPercent": 89,
+      "last_value_CycleCount": 542,
+      "last_value_NominalChargeCapacity": 3850
+    },
+    "thermal_metrics": {
+      "last_value_MaximumTemperature": 425
+    },
+    "crash_logs": {
+      "panicString": "panic(cpu 2 caller 0xfffffff02ecc): WDT timeout. CPU failed to respond. AOP PANIC - Power management bus stuck. Possible mainboard issue."
+    },
+    "metadata": {
+      "datasheet_version": "1.0",
+      "region_info": "Indonesia (Official)",
+      "storage_info": "256GB NVMe"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-12-30 20:15:00.00 +0700",
+  "bug_type": "211",
+  "os_version": "iPhone OS 16.5 (20F66)",
+  "name": "Analytics-Daily",
+  "model_identity": "iPhone11,8",
+  "payload": {
+    "productSku": "LL/A",
+    "deviceCapacity": 64,
+    "dramSize": 3.0,
+    "homeCarrierName": "No Service",
+    "WiFiChipset": "BCM4355",
+    "basebandFirmwareVersion": "5.02.01",
+    "battery_details": {
+      "last_value_MaximumCapacityPercent": 78,
+      "last_value_CycleCount": 1150,
+      "last_value_NominalChargeCapacity": 2200,
+      "design_capacity": 2942
+    },
+    "thermal_metrics": {
+      "last_value_MaximumTemperature": 495,
+      "thermal_pressure_level": "Critical"
+    },
+    "metadata": {
+      "region_info": "USA (International)"
+    }
+  }
+}

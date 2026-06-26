@@ -1,0 +1,17 @@
+{"bug_type":"211","timestamp":"2026-01-13 09:41:00.00 +0700","os_version":"iPhone OS 18.2 (23C55)","incident_id":"DUMMY-CREATOR-CHINA-16PM","name":"Analytics-Daily"}
+{
+  "modelHardwareID" : "iPhone17,2",
+  "productSku" : "CH/A",
+  "deviceCapacity" : 1000,
+  "dramSize" : 8,
+  "hardwareModel" : "D84AP",
+  "homeCarrierName" : "Tri",
+  "basebandFirmwareVersion" : "4.02.01",
+  "WiFiChipset" : "4399",
+  "uptime" : 604800000,
+  "last_value_MaximumCapacityPercent": 94,
+  "last_value_CycleCount": 385,
+  "last_value_MaximumTemperature": 465,
+  "last_value_AppleRawMaxCapacity": 4450,
+  "f_NandWrittenBytes": 45000000000000
+}

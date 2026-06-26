@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-12-31 09:00:00.00 +0700",
+  "bug_type": "210",
+  "os_version": "iPhone OS 17.0.3 (21A360)",
+  "name": "Panic-Full",
+  "model_identity": "iPad13,4",
+  "payload": {
+    "productSku": "ZP/A",
+    "deviceCapacity": 256,
+    "dramSize": 8.0,
+    "homeCarrierName": "Telkomsel",
+    "battery_details": {
+      "last_value_MaximumCapacityPercent": 82,
+      "last_value_CycleCount": 890,
+      "last_value_NominalChargeCapacity": 2150
+    },
+    "thermal_metrics": {
+      "last_value_MaximumTemperature": 410
+    },
+    "crash_logs": {
+      "panicString": "panic(cpu 0 caller 0xfffffff0): I2C bus error. Slave address 0x30 NACK. Missing sensor(s): TALS (Ambient Light) & Romeo (FaceID InfraRed). Hardware failure detected on Upper Flex."
+    }
+  }
+}

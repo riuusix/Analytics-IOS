@@ -1,0 +1,46 @@
+{"bug_type":"211","os_version":"iPhone OS 16.7.2 (20H115)","timestamp":"2025-12-27 17:45:00 +0700"}
+{
+  "name": "Analytics-Daily-Service-Required",
+  "incident_id": "A1B2C3D4-E5F6-7G8H-9I0J-K1L2M3N4O5P6",
+  "device_id": "D9876543210",
+  "metadata": {
+    "model_name": "iPhone12,1",
+    "region": "J/A (Japan - Silent Camera Restriction)",
+    "storage": "64 GB",
+    "ram_size": "3.72 GB",
+    "activation_status": "Activated"
+  },
+  "battery_statistics": {
+    "cycle_count": 1245,
+    "design_capacity_mah": 3110,
+    "nominal_charge_capacity_mah": 2332,
+    "maximum_capacity_percent": 75,
+    "is_authentic_battery": true,
+    "battery_serial": "F8Y0123456789ABC",
+    "health_status": "Service_Recommended",
+    "peak_performance_capability": "Reduced_Performance_Applied"
+  },
+  "thermal_management": {
+    "peak_temp_celsius": 54.8,
+    "average_temp_celsius": 41.2,
+    "thermal_pressure_level": "Heavy",
+    "throttling_events": [
+      {"timestamp": "2025-12-27T10:05:12Z", "duration_sec": 450, "cause": "Fast_Charging_While_Gaming"},
+      {"timestamp": "2025-12-27T14:22:30Z", "duration_sec": 120, "cause": "Ambient_Heat_Exposure"}
+    ]
+  },
+  "hardware_health": {
+    "display": {"status": "Normal", "original_serial": true},
+    "true_depth_camera": {"status": "Normal"},
+    "sensors": {
+      "accelerometer": "Normal",
+      "gyroscope": "Normal",
+      "ambient_light": "Degraded_Intermittent_Failure"
+    }
+  },
+  "application_usage": [
+    {"bundle_id": "com.apple.camera", "foreground_time_sec": 1200, "energy_impact": "High"},
+    {"bundle_id": "com.tencent.ig", "foreground_time_sec": 7200, "energy_impact": "Critical_Thermal"},
+    {"bundle_id": "com.zhiliaoapp.musically", "foreground_time_sec": 3600, "energy_impact": "Medium"}
+  ]
+}
