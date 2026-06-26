@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # --- KONFIGURASI AI ---
 # Ganti dengan API Key kamu yang baru jika sudah ada
-client = genai.Client(api_key="AIzaSyAKN6ZDrZp8A7HVfs_yq2Ilr1HFBJRKTrU")
+client = genai.Client(api_key="--------")
 
 def get_ai_expert_analysis(content):
     prompt = f"""
